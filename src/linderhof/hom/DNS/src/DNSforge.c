@@ -11,10 +11,11 @@
 #include "strix.h"
 #include "DNSforge.h"
 
-char dominio[] = "unb.br";
+char dominio[] = "google.com";
+static uint32_t Q[4096], c = 362436;
 
 Packet * ForgeDNS(void *p_arg ){
-	
+    
     Packet *pac = NULL;
     DNSheader * dns = NULL;
     QUESTION * ques = NULL;
@@ -29,11 +30,11 @@ Packet * ForgeDNS(void *p_arg ){
     packetSize = sizeof( DNSheader ) + strlen((const char*)strDomain) + 1 + sizeof(QUESTION);
     memalloc( (void *)&dns_packet, packetSize );
     
-    dns = ( DNSheader *) dns_packet;
-    name = (unsigned char *)(dns_packet + sizeof(DNSheader));
-    ques = ( QUESTION * )(dns_packet + sizeof(DNSheader) + (strlen((const char*)name) + 1)); 
+    dns = (DNSheader *) dns_packet;
+    name = (unsigned char *) (dns_packet + sizeof(DNSheader));
+    ques = (QUESTION *) (dns_packet + sizeof(DNSheader) + strlen((const char*)strDomain) + 1); 
 
-    dns->id = (unsigned short) htons(getpid());
+    dns->id = (unsigned short) htons(rand_cmwc());
     dns->qr = 0; //This is a query
     dns->opcode = 0; //This is a standard query
     dns->aa = 0; //Not Authoritative
@@ -41,24 +42,24 @@ Packet * ForgeDNS(void *p_arg ){
     dns->rd = 1; //Recursion Desired
     dns->ra = 0; //Recursion not available! hey we dont have it (lol)
     dns->z = 0;
-    dns->ad = 1;
+    dns->ad = 0;
     dns->cd = 0;
     dns->rcode = 0;
 
     dns->q_count = htons(1); //we have only 1 question
     dns->ans_count = 0;
     dns->auth_count = 0;
-    dns->add_count = htons(1);
+    dns->add_count = 0;
 
     ChangetoDnsNameFormat(name , strDomain);
 
     ques->qtype = htons(255);
     ques->qclass = htons(1);
 
-	pac->packet_ptr = dns_packet;
-	pac->pkt_size = packetSize;
+    pac->packet_ptr = dns_packet;
+    pac->pkt_size = packetSize;
 
-	return pac;
+    return pac;
 }
 
 void ChangetoDnsNameFormat(unsigned char* name, unsigned char * strDomain){
@@ -71,8 +72,23 @@ void ChangetoDnsNameFormat(unsigned char* name, unsigned char * strDomain){
             for(;lock<i;lock++){
                 *name++=strDomain[lock];
             }
-            lock++; //or lock=i+1;
+            lock++;
         }
     }
     *name++='\0';
+}
+
+uint32_t rand_cmwc(void){
+    uint64_t t, a = 18782LL;
+    static uint32_t i = 4095;
+    uint32_t x, r = 0xfffffffe;
+    i = (i + 1) & 4095;
+    t = a * Q[i] + c;
+    c = (t >> 32);
+    x = t + c;
+    if (x < c) {
+        x++;
+        c++;
+    }
+    return (Q[i] = r - x);
 }

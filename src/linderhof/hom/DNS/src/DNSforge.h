@@ -23,10 +23,6 @@ typedef struct {
     unsigned short auth_count; // number of authority entries
     unsigned short add_count; // number of resource entries
 
-    // unsigned char * nome;
-    // unsigned short ttype;
-    // unsigned short cclass;
-
 }DNSheader;
 
 typedef struct {
@@ -34,13 +30,10 @@ typedef struct {
     unsigned short qclass;
 }QUESTION;
 
-// typedef struct{
-//     unsigned char *nome;
-//     struct QUESTION *question;
-// }QUERY;
-
 Packet * ForgeDNS(void *p_arg);
 
 void ChangetoDnsNameFormat(unsigned char* name, unsigned char* strDomain);
+
+uint32_t rand_cmwc(void);
 
 #endif
