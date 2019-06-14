@@ -12,7 +12,7 @@
 #define SIGNAL_ERROR 2
 
 #define GetPort( port ) ( port > 0 ) ? port : DNS_DEFAULT_PORT
-#define UDPPacketSize( payload_size ) ( IP_HEADER_SIZE + UDP_HEADER_SIZE + payload_size )
+//#define UDPPacketSize ( payload_size ) ( IP_HEADER_SIZE + UDP_HEADER_SIZE + payload_size )
 
 static AttackPlan * createAttackDNS( LhfDraft *p_draft )
 {
@@ -21,6 +21,7 @@ static AttackPlan * createAttackDNS( LhfDraft *p_draft )
 
     memalloc( (void *)&newData, sizeof( AttackPlan ) );
     arg = DNS;
+
     newData->setPacket = ForgeUDP( p_draft->amp_ip, p_draft->target_ip, GetPort(p_draft->amp_port), ForgeDNS, &arg );
     newData->getPacket = ForgeUDP( p_draft->amp_ip, p_draft->target_ip, GetPort(p_draft->amp_port), ForgeDNS, &arg );
     newData->draft = p_draft;

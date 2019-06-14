@@ -30,6 +30,16 @@ typedef struct {
     unsigned short qclass;
 }QUESTION;
 
+typedef struct {
+    uint16_t atype;
+    uint16_t aclass;
+    uint32_t ttl;
+    uint16_t rdlen;
+    uint16_t teste;
+    uint32_t rdata;
+    uint64_t teste1;
+}ADDITIONAL;
+
 Packet * ForgeDNS(void *p_arg);
 
 void ChangetoDnsNameFormat(unsigned char* name, unsigned char* strDomain);

@@ -20,6 +20,7 @@
 #define ARG_TIMER 'c'
 #define ARG_LOGFILE 'f'
 #define ARG_INCREMENT 'i'
+#define ARG_DOMAIN 'd'
 
 static ArgsOpt atkArgpOption[] =
 {
@@ -33,6 +34,7 @@ static ArgsOpt atkArgpOption[] =
     { ARG_TIMER, "timer", true, false, "Attack timer"},
     { ARG_LOGFILE, "log", true, false, "Log file name"},
     { ARG_INCREMENT, "inc", true, false, "Increment attack"},
+    { ARG_DOMAIN, "domain", true, false, "Domain DNS"},
     { 0 }
 };
 
@@ -94,6 +96,15 @@ int parserAttackOpt (char key, char *arg, ArgState *state)
             }
             else if( !strcmp(arg, "dns") )
             {
+                // case ARG_DOMAIN:
+                //     if( NULL == arg)
+                //     {
+                //         printf("aqui\n");
+                //         Efatal(ERROR_CLI, "Invalid input");
+                //     }
+                //     //draft->incAttack = (atoi(arg) > 0) ? atoi(arg): 0;
+                // break;
+
                 draft->type = DNS;
                 strcpy(draft->mirrorName, "DNS");
             }
@@ -185,6 +196,14 @@ int parserAttackOpt (char key, char *arg, ArgState *state)
                 Efatal(ERROR_CLI, "Internal error: Oryx fatal");
             }
             draft->incAttack = (atoi(arg) > 0) ? atoi(arg): 0;
+            break;
+
+        case ARG_DOMAIN:
+            if( NULL == arg)
+            {
+                Efatal(ERROR_CLI, "Internal error: Oryx fatal");
+            }
+            //draft->incAttack = (atoi(arg) > 0) ? atoi(arg): 0;
             break;
   }
   return 0;
